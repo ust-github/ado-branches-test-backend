@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  stages {
+    stage ('Deploy (udkjn6)') {
+      steps {
+        sh script: '''
+ln -sf /usr/local/bin/helm3 /usr/local/bin/helm
+''', label: 'rlklcw'
+        sh script: 'helm package chart', label: 'ijhrf0'
+        withCredentials([usernamePassword(credentialsId: '', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+
+        script {
+            sh script: '''
+curl -u$USER:$PASS -T ado-branches-test-backend-chart-0.1.0.tgz 'https://artifactory.dagility.com/artifactory/helm-local/ado-branches-test-backend-chart-0.1.0.tgz' 
+''', label: 'affcbf'
+        } // end step group script
+script { sh script: 'sleep 0.005', label: '4j2evm'}
+} // end step group
+        sh script: 'helm repo add ado-branches-test-backend https://artifactory.dagility.com/artifactory/helm ', label: 'rvsu01'
+        sh script: 'helm repo update', label: 'mesfnb'
+        sh script: 'helm upgrade ado-branches-test-backend-deployment ado-branches-test-backend/ado-branches-test-backend-chart --install --values chart-values.yaml --namespace habitat-development --set ingress.hosts[0].host=ado-branches-test-backend-habitat-development.dagility.com', label: 'ixxrui'
+      } //end steps
+    } // end stage Deploy
+  }
+}
